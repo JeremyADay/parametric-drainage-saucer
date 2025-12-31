@@ -1,0 +1,11 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fn": "60",
+            "floor_thick": "3",
+            "wall_height": "10",
+            "wall_thick": "3"
+        }
+    }
+}
