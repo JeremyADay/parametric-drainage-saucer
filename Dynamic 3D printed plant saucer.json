@@ -6,6 +6,22 @@
             "floor_thick": "3",
             "wall_height": "10",
             "wall_thick": "3"
+        }{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fn": "60",
+            "flare_angle": "50",
+            "floor_thick": "2",
+            "pot_diameter": "178",
+            "rib_count": "10",
+            "rib_height": "3",
+            "rib_thick": "2",
+            "wall_height": "8",
+            "wall_thick": "2"
         }
+    }
+}
+
     }
 }
