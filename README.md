@@ -30,8 +30,12 @@ Unlike scaling a standard STL file - which results in thick, wasteful walls and 
 | :--- | :--- | :--- |
 | `pot_diameter` | 120 | Diameter of the pot bottom (mm). |
 | `wall_height` | 10 | Height of the outer rim (mm). |
+| `floor_thick` | 2.0 | Thickness of the solid bottom base (mm). |
+| `wall_thick` | 2.0 | Thickness of the vertical side walls (mm). |
 | `rib_height` | 4 | Air gap under the pot (mm). |
+| `rib_thick` | 2.0 | Thickness of the internal ribs (mm). |
 | `rib_count` | 0 | Set to 0 for automatic calculation, or a number to force a specific count. |
+| `$fn` | 120 | Curve smoothness (resolution). Higher = smoother but slower to render. |
 
 ## License
 
