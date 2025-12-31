@@ -8,7 +8,108 @@
 // This number controls how smooth circles look. 
 // OpenSCAD creates circles using many small straight lines.
 //   60  = Good for small prints or drafts (faster to render).
+//   120 = Smooth quality (recommended for final prints).// --- DRAINAGE SAUCER GENERATOR ---
+// Features:
+// 1. Watertight Bottom (Additive construction).
+// 2. Dynamic Ribs & Hub.
+// 3. Flared Walls (Fixed for high angles).
+
+// --- CURVE QUALITY ($fn) ---
+// This number controls how smooth circles look. 
+//   60  = Good for small prints or drafts (faster to render).
 //   120 = Smooth quality (recommended for final prints).
+$fn = 120; 
+
+// --- CONFIGURATION ---
+
+// Diameter of the pot bottom intended for this saucer
+pot_diameter = 178; 
+
+// Height of the outer side walls
+wall_height = 8; 
+
+// Angle to flare the walls outward (0 = vertical, 15 = standard flare)
+flare_angle = 50;
+
+// Lift Height (Airflow/Drainage gap)
+rib_height = 3;    
+
+// --- MATERIAL THICKNESS ---
+floor_thick = 2.0; // Thickness of the solid bottom base
+wall_thick = 2.0;  // Thickness of the vertical side walls
+rib_thick = 2.0;   // Thickness of the internal ribs
+
+// --- RIB SETTINGS ---
+// Set to 0 = Automatic calculation
+// Set to >0 = Manual Count
+rib_count = 10;
+
+// --- RENDER ---
+saucer_assembly();
+
+module saucer_assembly() {
+    
+    // --- DIMENSION LOGIC ---
+    // Add clearance for easy fit (2mm total gap)
+    inner_rad = (pot_diameter / 2) + 2;
+    outer_rad = inner_rad + wall_thick;
+    
+    // Calculate geometric rise/run
+    flare_tan = tan(flare_angle);
+    flare_offset = wall_height * flare_tan;
+    
+    // Dynamic internals
+    hub_radius = max(4, pot_diameter / 15);
+    auto_rib_count = max(6, floor((2 * 3.14159 * inner_rad) / 20));
+    step_angle = 360 / ((rib_count > 0) ? rib_count : auto_rib_count);
+    final_ribs = (rib_count > 0) ? rib_count : auto_rib_count;
+
+    // Output calculated parameters to console
+    echo(str("Saucer Diameter: ", pot_diameter, "mm"));
+    echo(str("Rib Count: ", final_ribs));
+    echo(str("Flare Offset: ", flare_offset, "mm"));
+
+    union() {
+        
+        // 1. SOLID FLOOR DISC
+        color("DodgerBlue")
+        cylinder(r=outer_rad, h=floor_thick);
+        
+        // 2. FLARED WALL RING
+        color("SteelBlue")
+        translate([0, 0, floor_thick])
+        difference() {
+            // Main Body
+            cylinder(r1=outer_rad, r2=outer_rad + flare_offset, h=wall_height); 
+            
+            // --- BOOLEAN MATH FIX ---
+            // We extend the cutout down (-1mm) and up (+1mm) to ensure a clean cut.
+            // But we must adjust the radius so the wall thickness stays constant at Z=0.
+            // r_bottom = target_radius - (slope * height_shift)
+            
+            cut_depth_bottom = 1;
+            cut_depth_top = 1;
+            
+            r_cut_bottom = inner_rad - (flare_tan * cut_depth_bottom);
+            r_cut_top = (inner_rad + flare_offset) + (flare_tan * cut_depth_top);
+            
+            translate([0,0,-cut_depth_bottom])
+                cylinder(r1=r_cut_bottom, r2=r_cut_top, h=wall_height + cut_depth_bottom + cut_depth_top); 
+        }
+        
+        // 3. RIBS & HUB STRUCTURE
+        color("LightSkyBlue")
+        translate([0, 0, floor_thick])
+        union() {
+            for(i=[0:final_ribs-1]) {
+                rotate([0, 0, i*step_angle])
+                translate([inner_rad/2, 0, rib_height/2])
+                    cube([inner_rad, rib_thick, rib_height], center=true);
+            }
+            cylinder(r=hub_radius, h=rib_height);
+        }
+    }
+}
 //   360 = Very high definition (slow to render).
 $fn = 120; 
 
